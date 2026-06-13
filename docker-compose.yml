@@ -1,0 +1,34 @@
+
+services:
+  api-spring:
+    container_name: backend
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    healthcheck:
+      test: "wget --no-verbose --spider http://backend:8080/actuator/health || exit 1"
+      interval: 10s
+      retries: 2
+    environment:
+      - PORT=8080
+    ports:
+      - '8080:8080'
+    networks:
+      - app-network
+
+  ihm-angular:
+    container_name: ihm-angular
+    build:
+      context: ./ihm
+      dockerfile: Dockerfile
+    ports:
+      - '4200:80'
+    networks:
+      - app-network
+    environment:
+      - LOCAL_PROXY=true
+    depends_on:
+      - api-spring
+networks:
+  app-network:
+    driver: "bridge"

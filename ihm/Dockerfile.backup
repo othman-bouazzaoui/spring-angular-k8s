@@ -1,0 +1,33 @@
+
+### STAGE 1: Build ###
+FROM node:20.20.1-bullseye-slim AS build
+WORKDIR /usr/src/app
+COPY package.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+### STAGE 2: Run ###
+FROM nginx:1.17.1-alpine
+
+COPY nginx.dev.conf /etc/nginx/nginx.dev.conf
+COPY nginx.conf /etc/nginx/nginx.conf
+
+#WORKDIR /usr/share/nginx/html
+#COPY dist/ihm/browser .
+
+COPY --from=build /usr/src/app/dist/ihm/browser /usr/share/nginx/html
+
+# Set up environment variable substitution script, will be executed at container startup
+COPY envsubst.sh /tmp/envsubst.sh
+RUN chmod +x /tmp/envsubst.sh
+ENTRYPOINT ["/tmp/envsubst.sh"]
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+
+#docker buildx build -t othmanbouazzaoui/ihm-angular:1.0 .
+#docker push othmanbouazzaoui/ihm-angular:1.0
+#docker network create app-network
+#docker run --name ihm-angular --network app-network --env LOCAL_PROXY=true -p 4200:80 othmanbouazzaoui/ihm-angular:1.0

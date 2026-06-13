@@ -1,0 +1,8 @@
+{
+  "baseUrl": "",
+  "keycloak": {
+    "url": "http://localhost:7090",
+    "realm": "ordering",
+    "clientId": "front-end"
+  }
+}

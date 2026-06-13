@@ -1,0 +1,23 @@
+# ─── Stage 1: Build ───────────────────────────────────────────────────────────
+# Uses the full Maven + JDK 17 image to compile and package the app into a JAR
+FROM maven:3-eclipse-temurin-17 AS build
+RUN mkdir -p /workspace
+WORKDIR /workspace
+COPY pom.xml /workspace
+COPY src /workspace/src
+#COPY .m2/settings.xml /workspace
+#RUN mvn -f pom.xml clean package -s settings.xml
+RUN mvn -f pom.xml clean package
+
+# ─── Stage 2: Run ─────────────────────────────────────────────────────────────
+# Uses a lightweight JRE-only Alpine image (no Maven, no JDK = smaller image)
+# Copies only the built JAR from Stage 1, discarding all build dependencie
+FROM eclipse-temurin:17-jre-alpine
+#ARG JAR_FILE=target/*.jar
+#COPY ${JAR_FILE} application.jar
+COPY --from=build /workspace/target/*.jar application.jar
+#ENTRYPOINT ["java","-jar","/application.jar", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"]
+#EXPOSE 8080 5005
+#5005 for debug mode
+ENTRYPOINT ["java","-jar","/application.jar"]
+EXPOSE 8080
