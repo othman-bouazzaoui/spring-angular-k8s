@@ -49,4 +49,10 @@ spring-angular-docker-k8s-aks application.
 > `docker compose down`  
 
 ### k8s (comming soon 😉)
+ - step 1 : declarative approach with simple config files .yaml  
+  `cd k8s/native`  
+  `kubectl apply -R -f .`  
+   
+  the Application will be availaible [http://localhost:30000](http://localhost:30000)  
 
+  `kubectl delete -R -f .`  
