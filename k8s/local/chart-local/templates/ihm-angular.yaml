@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ihm-angular
+  namespace: spring-angular-docker-k8s-aks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ihm-angular
+  template:
+    metadata:
+      labels:
+        app: ihm-angular
+    spec:
+      initContainers:
+        - name: wait-for-backend
+          image: curlimages/curl
+          command: ["sh", "-c"]
+          args: ["until curl -sf http://backend:8080/actuator/health; do sleep 1; done"]
+      containers:
+        - name: ihm-angular
+          image: othmanbouazzaoui/ihm-angular:1.0
+          ports:
+            - containerPort: 80
+          env:
+            - name: LOCAL_PROXY
+              value: "true"  # used for nginx proxy in front end for DEV env without k8s
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ihm-angular
+  namespace: spring-angular-docker-k8s-aks
+spec:
+  selector:
+    app: ihm-angular
+  ports:
+    - port: 80
+      targetPort: 80
+#      nodePort: 30000
+#  type: NodePort
+#  type: ClusterIP
+  type: LoadBalancer

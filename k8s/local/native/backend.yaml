@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: spring-angular-docker-k8s-aks
+  
+---  
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: spring-angular-docker-k8s-aks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      initContainers:
+        #- name: wait-for-backend
+        #  image: curlimages/curl
+        #  command: ["sh", "-c"]
+        #  args: ["until curl -sf http://backend:8080/actuator/health; do sleep 1; done"]
+      containers:
+        - name: backend
+          image: othmanbouazzaoui/api-spring:1.0
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080" 
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: spring-angular-docker-k8s-aks
+spec:
+  selector:
+    app: backend
+  ports:
+    - port: 8080
+      targetPort: 8080    
+  type: ClusterIP
