@@ -1,0 +1,63 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: spring-angular-ingress
+  namespace: spring-angular-docker-k8s-aks
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: www.othmanbouazzaoui.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ihm-angular
+                port:
+                  number: 80
+    - host: "*.othmanbouazzaoui.com"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ihm-angular
+                port:
+                  number: 80
+    - host: othmanbouazzaoui.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ihm-angular
+                port:
+                  number: 80
+
+    ## example of a subdomain for the application                  
+    - host: app.othmanbouazzaoui.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ihm-angular
+                port:
+                  number: 80
+    ## To Access using ip address of the ingress controller                  
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ihm-angular
+                port:
+                  number: 80
