@@ -1,6 +1,26 @@
 
+<div class="container">
 <button (click)="getAllProducts()"> show products</button>
 
 <h2> Products </h2>
 
-<p> {{ products | json }} </p>
+<!--p> {{ products | json }} </p-->
+
+<table class="table table-striped">
+  <thead class="thead-dark">
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Price</th>
+    </tr>
+  </thead>
+  <tbody class="table-group-divider">
+    <tr *ngFor="let product of products">
+      <td>{{ product.name }}</td>
+      <td>{{ product.description }}</td>
+      <td>{{ product.price }}</td>
+    </tr>
+  </tbody>
+</table>
+
+</div>
